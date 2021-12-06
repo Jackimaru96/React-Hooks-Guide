@@ -35,7 +35,7 @@
 - Need to understand the component lifecycle 
   
 
-  ![image-20211206152008003](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20211206152008003.png)
+  ![image-20211206152008003](./Lifecycle.png)
 
 - useEffect is a function that takes a function you define as its first argument
 
