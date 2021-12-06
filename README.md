@@ -1,4 +1,25 @@
-# React-Hooks-Guide
+- [React Hooks](#react-hooks)
+- [Rules of using Hooks](#rules-of-using-hooks)
+- [`useState()`](#usestate)
+  * [Example code of useState()](#example-code-of-usestate)
+- [`useEffect()`](#useeffect)
+  * [Example of useEffect()](#example-of-useeffect)
+- [`useContext()`](#usecontext)
+  * [Example code of useContext()](#example-code-of-usecontext)
+- [`useRef()`](#useref)
+  * [Example code of useRef()](#example-code-of-useref)
+    + [2 Rules to remember about references](#2-rules-to-remember-about-references)
+    + [Difference between reference and state](#difference-between-reference-and-state)
+    + [Example for accessing DOM elements](#example-for-accessing-dom-elements)
+      - [Use case: focusing an input](#use-case--focusing-an-input)
+- [`useReducer()`](#usereducer)
+  * [Example code of `useReducer()`](#example-code-of--usereducer)
+- [`useMemo()`](#usememo)
+  * [Example code of `useMemo()`](#example-code-of--usememo)
+- [`useCallback()`](#-usecallback)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 # React Hooks
 - UI components are often dynamic and may need to change state of data, react to lifecycle events and access elements of the DOM etc.
@@ -12,11 +33,11 @@
 1) Call them in top-level of a functional component; Do not work in regular JS functions/nested functions/loops
 2) Only exception is if you use custom Hooks
 
-## `useState()`
+# `useState()`
 - The most important and often used Hook
 - Handle reactive data; any data that changes in the application is called **state**
 
-### Example code of useState()
+## Example code of useState()
 <details open>
    <summary>Code of useState() </summary>
 
@@ -31,7 +52,7 @@
    ```
 </details>
 
-## `useEffect()`
+# `useEffect()`
 - Need to understand the component lifecycle 
   
 
@@ -102,15 +123,13 @@
 
 </details>
 
-
-
-## `useContext()`
+# `useContext()`
 - React's context API to share or scope value throughout entire component tree
 - `ContextProvider` to scope the value in a parent component and any child component down the tree can access this value and we do not need to pass down the value via props
 - When the context value in the parent component changes, it is automatically updated in the child components
 - Child component consumes context value from the nearest parent provider
 
-### Example code of useContext()
+## Example code of useContext()
 <details open>
    <summary>Code of useContext() </summary>
 
@@ -148,7 +167,7 @@ function MoodEmoji() {
 </details>
 
 
-## `useRef()`
+# `useRef()`
 - Accepts one argument as the initial value and returns a *reference*
 - A reference is an object having a special property `current`
 - Create a mutable object that will keep the same reference between renders
@@ -156,7 +175,7 @@ function MoodEmoji() {
 - Mutable value does NOT re-render UI
 - More common use case for `useRef()` is to grab native HTML elements from DOM
 
-### Example code of useRef()
+## Example code of useRef()
 <details open>
    <summary>Code of useRef() </summary>
 
@@ -243,12 +262,12 @@ function InputFocus() {
 </details>
 
 
-## `useReducer()`
+# `useReducer()`
 - Similar to `setState()` but using Redux pattern
 - Instead of updating the state directly, actions are dispatched to the reducer function and that reducer function determines how to compute the next state
 - Returns an array of two values: 1) The state, 2) function that dispatch an action (object that has a type and optional data payload)
 
-### Example code of `useReducer()`
+## Example code of `useReducer()`
 <details open>
    <summary>Code of useReducer()</summary>
 
@@ -281,13 +300,13 @@ function InputFocus() {
 - Reducer function is defined by you and passed as argument to the `useReducer()` hook
 - The function takes the current state and action as arguments and uses these values to compute the next state which is usually handled inside a switch statement
 
-## `useMemo()`
+# `useMemo()`
 - Optimise computation calls for improved performance
 - Cache result of function call (memoization); use only as needed for expensive calculations
 - Imagine you have an expensive computation, `expensiveCount()` on top of the count `useState()` hook
 - Instead of re-computing on every render, we can memoize the value - write a function that returns the computed value and add dependency in the dependency array
 
-### Example code of `useMemo()`
+## Example code of `useMemo()`
 <details open>
    <summary>Code of useMemo()</summary>
 
@@ -304,7 +323,7 @@ function InputFocus() {
 </details>
 
 
-## `useCallback()`
+# `useCallback()`
 - Hook used to memoize an entire function
 - When you define a function in a component, a new function object is created each time your component is re-rendered.
 - In some cases, you might want to memoize the function to improve performance
