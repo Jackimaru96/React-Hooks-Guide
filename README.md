@@ -33,6 +33,76 @@
 
 ## `useEffect()`
 - Need to understand the component lifecycle 
+  
+
+  ![image-20211206152008003](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20211206152008003.png)
+
+- useEffect is a function that takes a function you define as its first argument
+
+- React will then run the function/side effect after it has updated the DOM 
+
+- The first argument of `useEffect()` is a (side effect) function that is called as the side effect when the component first renders and sometimes when stateful data changes - dependning on the dependency array passed in
+
+- The second argument of `useEffect()` is the dependency array which are the dependencies of the Hook
+
+  - An empty dependency array will only result in the side effect function being called **once** - when the component first renders
+  - We can add in states to the dependency array so that the side effect function will be called again when that dependent state changes
+
+## Example of useEffect() 
+
+<details open>
+   <summary>Code of useEffet() </summary>
+
+
+   ```jsx
+      import {useState} from 'react';
+      function App() {
+         // state, setter function that changes the state
+         const [count, setCount] = useState(0);
+         const [loaded, setLoaded] = useState(false);
+         
+         // No dependency array passed in - Runs everytime
+         // 1) component mounted
+         // 2) component updates (state changes)
+         useEffect(() => {
+             alert("Hello side effect!")
+         })
+          
+         // More fine-grained control
+         // This results in infinite loop
+         // Everytime fetch, we update state, which triggers fetch again, so on & so forth          
+         useEffect(() => {
+             fetch('foo').then(() => setLoaded(true))
+         })
+          
+         // We pass in dependency array to have more control
+         // Empty array: No dependencies; Run only once when the component first initialises 
+         useEffect(() => {
+             fetch('foo').then(() => setLoaded(true))
+         }, [])
+          
+         // Re-run the function any time certain stateful data has changed
+         // Add the state to the dependency array
+         // In this case, the fetch is only called when the component first initialises
+         // and when the `count` state changes
+         useEffect(() => {
+             fetch('foo').then(() => setLoaded(true))
+         }, [count])
+          
+         // Tear down function - before component removed from UI
+         useEffect(() => {
+            alert('hello side effect!')
+            return () => alert('goodbye component!') 
+         })
+          
+         return (<></>);
+      }       
+
+   ```
+
+</details>
+
+
 
 ## `useContext()`
 - React's context API to share or scope value throughout entire component tree
