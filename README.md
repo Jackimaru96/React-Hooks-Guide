@@ -18,8 +18,6 @@
   * [Example code of `useMemo()`](#example-code-of--usememo)
 - [`useCallback()`](#-usecallback)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 # React Hooks
 - UI components are often dynamic and may need to change state of data, react to lifecycle events and access elements of the DOM etc.
