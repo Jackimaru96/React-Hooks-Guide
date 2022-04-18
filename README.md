@@ -18,8 +18,8 @@
   * [Example code of `useMemo()`](#example-code-of--usememo)
 - [`useCallback()`](#-usecallback)
 
-
 # React Hooks
+
 - UI components are often dynamic and may need to change state of data, react to lifecycle events and access elements of the DOM etc.
 - Hooks provide an ergonomic way to build components - as you can reuse stateful logic without changing your component hierarchy
 - React provide 10 built-in Hooks
@@ -27,15 +27,15 @@
 - Low-level primitives/building block of React
 - Hooks are functions that always start with the word `use`
 
-# Rules of using Hooks
+## Rules of using Hooks
 1) Call them in top-level of a functional component; Do not work in regular JS functions/nested functions/loops
 2) Only exception is if you use custom Hooks
 
-# `useState()`
+## `useState()`
 - The most important and often used Hook
 - Handle reactive data; any data that changes in the application is called **state**
 
-## Example code of useState()
+### Example code of useState()
 <details open>
    <summary>Code of useState() </summary>
 
@@ -50,7 +50,7 @@
    ```
 </details>
 
-# `useEffect()`
+## `useEffect()`
 - Need to understand the component lifecycle 
   
 
@@ -67,7 +67,7 @@
   - An empty dependency array will only result in the side effect function being called **once** - when the component first renders
   - We can add in states to the dependency array so that the side effect function will be called again when that dependent state changes
 
-## Example of useEffect() 
+### Example of useEffect() 
 
 <details open>
    <summary>Code of useEffet() </summary>
@@ -121,13 +121,13 @@
 
 </details>
 
-# `useContext()`
+## `useContext()`
 - React's context API to share or scope value throughout entire component tree
 - `ContextProvider` to scope the value in a parent component and any child component down the tree can access this value and we do not need to pass down the value via props
 - When the context value in the parent component changes, it is automatically updated in the child components
 - Child component consumes context value from the nearest parent provider
 
-## Example code of useContext()
+### Example code of useContext()
 <details open>
    <summary>Code of useContext() </summary>
 
@@ -165,7 +165,7 @@ function MoodEmoji() {
 </details>
 
 
-# `useRef()`
+## `useRef()`
 - Accepts one argument as the initial value and returns a *reference*
 - A reference is an object having a special property `current`
 - Create a mutable object that will keep the same reference between renders
@@ -173,7 +173,7 @@ function MoodEmoji() {
 - Mutable value does NOT re-render UI
 - More common use case for `useRef()` is to grab native HTML elements from DOM
 
-## Example code of useRef()
+### Example code of useRef()
 <details open>
    <summary>Code of useRef() </summary>
 
@@ -198,6 +198,7 @@ function MyComponent() {
 `reference.current` accesses the reference value, and `reference.current = newValue` updates the reference value
 
 ### 2 Rules to remember about references
+
 1. The value of the reference is **persisted** (stays the same) between component re-renderings
 2. Updating a reference does not trigger a component re-rendering
 
@@ -260,12 +261,38 @@ function InputFocus() {
 </details>
 
 
-# `useReducer()`
+
+## `useRef()` with Typescript
+
+```tsx
+// The type needs to be correct - Ctrl + click on interface like HTMLInputElement which will
+// bring you to the global.d.ts file which shows all the HTMLElement interfaces that are extended
+// from the base HTMLElement interface
+
+const UserSearch: React.FC = () => {
+    // ref might not have referene to any element 
+    // hence should be given a type of null as well
+	const inputRef = useRef<HTMLInputElement | null>(null);
+    const [name, setName] = useState('');
+    
+    return (
+        <input ref={inputRef} value={name} onChange={(e) => setName(e.target.value)}/>
+    )
+}
+
+
+
+```
+
+
+
+
+## `useReducer()`
 - Similar to `setState()` but using Redux pattern
 - Instead of updating the state directly, actions are dispatched to the reducer function and that reducer function determines how to compute the next state
 - Returns an array of two values: 1) The state, 2) function that dispatch an action (object that has a type and optional data payload)
 
-## Example code of `useReducer()`
+### Example code of `useReducer()`
 <details open>
    <summary>Code of useReducer()</summary>
 
@@ -298,13 +325,13 @@ function InputFocus() {
 - Reducer function is defined by you and passed as argument to the `useReducer()` hook
 - The function takes the current state and action as arguments and uses these values to compute the next state which is usually handled inside a switch statement
 
-# `useMemo()`
+## `useMemo()`
 - Optimise computation calls for improved performance
 - Cache result of function call (memoization); use only as needed for expensive calculations
 - Imagine you have an expensive computation, `expensiveCount()` on top of the count `useState()` hook
 - Instead of re-computing on every render, we can memoize the value - write a function that returns the computed value and add dependency in the dependency array
 
-## Example code of `useMemo()`
+### Example code of `useMemo()`
 <details open>
    <summary>Code of useMemo()</summary>
 
@@ -321,9 +348,25 @@ function InputFocus() {
 </details>
 
 
-# `useCallback()`
+## `useCallback()`
 - Hook used to memoize an entire function
 - When you define a function in a component, a new function object is created each time your component is re-rendered.
 - In some cases, you might want to memoize the function to improve performance
 - A use case is when you pass this same function to multiple child components
 - Prevent unnecessary re-renders of the children as they will always be using the same function object
+
+
+
+# react-router-dom
+
+## BrowerRouter
+
+```tsx
+<BrowserRouter>
+    <Routes>
+        <Route path="/" element={<HomePage />}/>        
+        <Route path="/about" element={<AboutPage />}/>
+    </Routes>
+</BrowserRouter>
+```
+
