@@ -106,7 +106,7 @@
 
 </details>
 
-### Async Functions in useEffect
+### [Async Functions in useEffect](https://devtrium.com/posts/async-functions-useeffect)
 
 - The first argument is supposed to be a function that returns either nothing (`undefined`) or a function (to clean up side effects).
 
