@@ -1,22 +1,6 @@
-- [React Hooks](#react-hooks)
-- [Rules of using Hooks](#rules-of-using-hooks)
-- [`useState()`](#usestate)
-  * [Example code of useState()](#example-code-of-usestate)
-- [`useEffect()`](#useeffect)
-  * [Example of useEffect()](#example-of-useeffect)
-- [`useContext()`](#usecontext)
-  * [Example code of useContext()](#example-code-of-usecontext)
-- [`useRef()`](#useref)
-  * [Example code of useRef()](#example-code-of-useref)
-    + [2 Rules to remember about references](#2-rules-to-remember-about-references)
-    + [Difference between reference and state](#difference-between-reference-and-state)
-    + [Example for accessing DOM elements](#example-for-accessing-dom-elements)
-      - [Use case: focusing an input](#use-case--focusing-an-input)
-- [`useReducer()`](#usereducer)
-  * [Example code of `useReducer()`](#example-code-of--usereducer)
-- [`useMemo()`](#usememo)
-  * [Example code of `useMemo()`](#example-code-of--usememo)
-- [`useCallback()`](#-usecallback)
+[TOC]
+
+
 
 # React Hooks
 
@@ -56,7 +40,7 @@
 
   ![image-20211206152008003](./Lifecycle.png)
 
-- useEffect is a function that takes a function you define as its first argument
+- useEffect is a function that takes a **function** you define as its first argument
 
 - React will then run the function/side effect after it has updated the DOM 
 
@@ -70,7 +54,8 @@
 ### Example of useEffect() 
 
 <details open>
-   <summary>Code of useEffet() </summary>
+   <summary>Code of useEffect() </summary>
+
 
 
    ```jsx
@@ -120,6 +105,122 @@
    ```
 
 </details>
+
+### Async Functions in useEffect
+
+- The first argument is supposed to be a function that returns either nothing (`undefined`) or a function (to clean up side effects).
+
+- An async function returns a `Promise`, which can't be called as a function. Its simply not what the `useEffect` hook expects for its first argument
+
+- As such the following code below is errorneous 
+
+  ```tsx
+  · · ·
+  // ❌ don't do this
+  useEffect(async () => {
+    const data = await fetchData();
+  }, [fetchData])
+  · · ·
+  ```
+
+  The correct way of using asynchronous code inside a `useEffect` is as follows
+
+  Write the async function inside `useEffect`
+
+  ```tsx
+  · · ·
+  useEffect(() => {
+    // declare the data fetching function
+    const fetchData = async () => {
+      const data = await fetch('https://yourapi.com');
+    }
+  
+    // call the function
+    fetchData()
+      // make sure to catch any error
+      .catch(console.error);
+  }, [])
+  · · ·
+  ```
+
+  - A caveat is that if you want to use the result from the asynchronous code, you should do it inside the `fetchData` function, not outside
+
+  - For example, the following would lead to issues
+
+  - ```tsx
+    · · ·
+    useEffect(() => {
+      // declare the async data fetching function
+      const fetchData = async () => {
+        // get the data from the api
+        const data = await fetch('https://yourapi.com');
+        // convert data to json
+        const json = await data.json();
+        return json;
+      }
+    
+      // call the function
+      const result = fetchData()
+        // make sure to catch any error
+        .catch(console.error);;
+    
+      // ❌ don't do this, it won't work as you expect!
+      setData(result);
+    }, [])
+    · · ·
+    ```
+
+  - You will get a pending Promise object instead `Promise {<pending>}`
+
+  - We neded to use the result of the asynchronous code inside the fetch data function
+
+  - ```tsx
+    · · ·
+    useEffect(() => {
+      // declare the async data fetching function
+      const fetchData = async () => {
+        // get the data from the api
+        const data = await fetch('https://yourapi.com');
+        // convert the data to json
+        const json = await response.json();
+    
+        // set state with the result
+        setData(json);
+      }
+    
+      // call the function
+      fetchData()
+        // make sure to catch any error
+        .catch(console.error);;
+    }, [])
+    · · ·
+    ```
+
+    #### Extracting function outside `useEffect`
+
+    - In some cases, we want the data fetching function outside `useEffect`
+
+    - As such we have to be careful and warp the function with a `useCallback`
+
+    - Why? Well, since the function is declared outside of `useEffect`, you will have to put it in the dependency array of the hook. But if the function isn't wrapped in `useCallback`, it will update on every re-render, and thus trigger the `useEffect` on every re-render. Which is rarely what you want!
+
+    - ```tsx
+      · · ·
+      // declare the async data fetching function
+      const fetchData = useCallback(async () => {
+        const data = await fetch('https://yourapi.com');
+      
+        setData(data);
+      }, [])
+      
+      // the useEffect is only there to call `fetchData` at the right time
+      useEffect(() => {
+        fetchData()
+          // make sure to catch any error
+          .catch(console.error);;
+      }, [fetchData])
+      · · ·
+      ```
 
 ## `useContext()`
 - React's context API to share or scope value throughout entire component tree
@@ -354,19 +455,147 @@ const UserSearch: React.FC = () => {
 - In some cases, you might want to memoize the function to improve performance
 - A use case is when you pass this same function to multiple child components
 - Prevent unnecessary re-renders of the children as they will always be using the same function object
+- Example use case - the function is defined in a context and to be used in a `useEffect()` hook in the children component, it should be used as a dependency in the `useEffect() `dependency array
+- However, if the function is not memoized using `useCallback()`, it will result in unnecessary re-renders 
 
 
 
 # react-router-dom
 
-## BrowerRouter
+## BrowerRouter, Routes and Route
 
 ```tsx
-<BrowserRouter>
-    <Routes>
-        <Route path="/" element={<HomePage />}/>        
-        <Route path="/about" element={<AboutPage />}/>
-    </Routes>
-</BrowserRouter>
+import { BrowserRouter as Router, Routes } from 'react-router-dom'
+import AboutPage from "./components/AboutPage"
+import ProfilePage from "./components/ProfilePage"
+
+const App = () => {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />}/>    // Main page of site    
+                <Route path="/about" element={<AboutPage />}/>
+                <Route path="/profile" element={<ProfilePage />}/>
+                <Route path="*" element={<ErrorPage/>} /> // Error Page
+            </Routes>
+        </Router>
+    
+    )
+}
+```
+
+- Each of the `Route` will link to the React component based on the path
+- The last `Route` can be a general error page that links to an error page/404 page when user keys in a path that does not exist
+
+## Links
+
+```tsx
+import { BrowserRouter as Router, Routes, Link } from 'react-router-dom'
+import AboutPage from "./components/AboutPage"
+import ProfilePage from "./components/ProfilePage"
+
+const App = () => {
+    return (
+        <Router>
+            <nav>
+                <Link to="/somepage">
+                    Some Page
+                </Link>      
+                <Link to={{
+                        pathname: '/someotherpage',
+                        search: '?sort=name'         //adds param
+                        hash: "#hello"               // adds hash
+                    }}>
+                    Some Other Page
+                </Link>      
+            </nav>
+            <Routes>
+                <Route path="/" element={<HomePage />}/>    // Main page of site    
+                <Route path="/about" element={<AboutPage />}/>
+                <Route path="/profile" element={<ProfilePage />}/>
+                <Route path="*" element={<ErrorPage/>} /> // Error Page
+            </Routes>
+        </Router>
+    
+    )
+}
+```
+
+- Should not be using `a` tags as it will refresh the page, we want it to be all done immediately on the client side without the need to refresh
+- We do so by using the `Link` component 
+
+
+
+## useNavigate
+
+```tsx
+import { useNavigate } from 'react-router-dom'
+
+const ProfilePage = () => {
+    let navigate = useNavigate();
+    return (
+    	<div>
+            This is the Profile Page
+            <button onClick={() => {navigate("/about")}}>
+                Go to About Page using useNavigate
+            </button>
+        </div>
+    )
+}
+```
+
+- An alternative to `useHistory`
+
+
+
+## useParams
+
+- Hook to use the parameters in the url dynamically
+
+```tsx
+import { BrowserRouter as Router, Routes } from 'react-router-dom'
+import AboutPage from "./components/AboutPage"
+import ProfilePage from "./components/ProfilePage"
+
+const App = () => {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />}/>    // Main page of site    
+                <Route path="/about" element={<AboutPage />}/>
+                <Route path="/profile/:userID" element={<ProfilePage />}/>
+                <Route path="*" element={<ErrorPage/>} /> // Error Page
+            </Routes>
+        </Router>
+    
+    )
+}
+
+import { useNavigate, useParams } from 'react-router-dom'
+
+const ProfilePage = () => {
+    let navigate = useNavigate();
+    const params = useParams();
+    return (
+    	<div>
+            This is the Profile Page for {params.userID}!
+            <button onClick={() => {navigate("/about")}}>
+                Go to About Page using useNavigate
+            </button>
+        </div>
+    )
+}
+```
+
+
+
+## NavLink
+
+- A special version of the `<Link>`that will add styling attributes to the rendered element when it matches the current URL.
+
+```tsx
+<NavLink to="/" activeClassName="some-css-classname"> 
+    Home
+</NavLink>
 ```
 
